@@ -8,9 +8,9 @@
 
 1. 阅读关卡 `README.md`，理解业务背景和新增需求。
 2. 阅读 `before/`，找出坏味道。
-3. 运行测试，确认当前行为。
-4. 自己尝试重构。
-5. 对照 `after/`，观察设计模式解决了哪个变化点。
+3. 在 `practice/` 中自己尝试重构。
+4. 运行测试，确认行为和新增需求。
+5. 最后再对照 `solutions/` 中的参考实现，观察设计模式解决了哪个变化点。
 6. 完成 `notes.md` 里的复盘问题。
 
 ## 构建和测试
@@ -22,6 +22,23 @@ ctest --test-dir build --output-on-failure
 ```
 
 项目不依赖 Catch2、GoogleTest 或其他第三方库，测试工具在 `tests/test_framework.hpp`。
+
+## 目录约定
+
+```text
+lessons/
+  01_strategy/
+    README.md
+    before/
+    practice/
+    tests/
+    notes.md
+solutions/
+  01_strategy/
+    after/
+```
+
+`lessons/` 是闯关区，优先只看这里。`solutions/` 是答案区，建议完成自己的版本后再打开。
 
 ## 首版关卡
 

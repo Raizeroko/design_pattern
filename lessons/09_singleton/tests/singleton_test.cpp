@@ -1,5 +1,5 @@
-#include "lessons/09_singleton/after/config.hpp"
 #include "lessons/09_singleton/before/config.hpp"
+#include "solutions/09_singleton/after/config.hpp"
 #include "tests/test_framework.hpp"
 
 #include <map>

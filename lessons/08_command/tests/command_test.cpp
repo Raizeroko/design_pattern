@@ -1,5 +1,5 @@
-#include "lessons/08_command/after/editor.hpp"
 #include "lessons/08_command/before/editor.hpp"
+#include "solutions/08_command/after/editor.hpp"
 #include "tests/test_framework.hpp"
 
 #include <memory>

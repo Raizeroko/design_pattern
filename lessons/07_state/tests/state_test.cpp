@@ -1,5 +1,5 @@
-#include "lessons/07_state/after/ticket.hpp"
 #include "lessons/07_state/before/ticket.hpp"
+#include "solutions/07_state/after/ticket.hpp"
 #include "tests/test_framework.hpp"
 
 void state_tests() {

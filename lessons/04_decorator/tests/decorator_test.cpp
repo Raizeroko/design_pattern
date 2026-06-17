@@ -1,5 +1,5 @@
-#include "lessons/04_decorator/after/drink.hpp"
 #include "lessons/04_decorator/before/drink.hpp"
+#include "solutions/04_decorator/after/drink.hpp"
 #include "tests/test_framework.hpp"
 
 #include <memory>

@@ -1,5 +1,5 @@
-#include "lessons/06_template_method/after/report.hpp"
 #include "lessons/06_template_method/before/report.hpp"
+#include "solutions/06_template_method/after/report.hpp"
 #include "tests/test_framework.hpp"
 
 #include <vector>

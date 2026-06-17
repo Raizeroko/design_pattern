@@ -1,5 +1,5 @@
-#include "lessons/03_observer/after/order.hpp"
 #include "lessons/03_observer/before/order.hpp"
+#include "solutions/03_observer/after/order.hpp"
 #include "tests/test_framework.hpp"
 
 void observer_tests() {

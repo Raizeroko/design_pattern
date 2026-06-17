@@ -1,5 +1,5 @@
-#include "lessons/10_facade/after/checkout.hpp"
 #include "lessons/10_facade/before/checkout.hpp"
+#include "solutions/10_facade/after/checkout.hpp"
 #include "tests/test_framework.hpp"
 
 void facade_tests() {

@@ -1,5 +1,5 @@
-#include "lessons/05_adapter/after/payment.hpp"
 #include "lessons/05_adapter/before/payment.hpp"
+#include "solutions/05_adapter/after/payment.hpp"
 #include "tests/test_framework.hpp"
 
 void adapter_tests() {

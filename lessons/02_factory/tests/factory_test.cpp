@@ -1,5 +1,5 @@
-#include "lessons/02_factory/after/notification.hpp"
 #include "lessons/02_factory/before/notification.hpp"
+#include "solutions/02_factory/after/notification.hpp"
 #include "tests/test_framework.hpp"
 
 void factory_tests() {

@@ -1,5 +1,5 @@
-#include "lessons/01_strategy/after/shipping.hpp"
 #include "lessons/01_strategy/before/shipping.hpp"
+#include "solutions/01_strategy/after/shipping.hpp"
 #include "tests/test_framework.hpp"
 
 #include <memory>
