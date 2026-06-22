@@ -1,3 +1,9 @@
+/*
+测试目的：锁定布尔参数版本的基础价格与加料价格。
+测试步骤：分别计算纯咖啡，以及同时加牛奶和糖浆的咖啡。
+通过含义：旧函数计算正确；问题在于每增加一种加料都要增加参数和条件分支。
+*/
+
 #include "before.hpp"
 
 #include <iostream>
@@ -11,4 +17,3 @@ int main() {
               << "boolean extras should be added to the price\n";
     return base_ok && extras_ok ? 0 : 1;
 }
-

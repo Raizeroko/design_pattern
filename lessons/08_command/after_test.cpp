@@ -1,3 +1,9 @@
+/*
+测试目的：验证命令可以被统一执行、保存，并由历史记录撤销。
+测试步骤：历史记录执行两个 AppendTextCommand，再撤销最后一个命令。
+通过含义：调用方不需要计算删除长度，撤销所需状态由具体命令保存。
+*/
+
 #include "after.hpp"
 
 #include <iostream>
@@ -20,4 +26,3 @@ int main() {
               << "history should undo the latest command\n";
     return executed && undone ? 0 : 1;
 }
-

@@ -1,3 +1,9 @@
+/*
+测试目的：验证装饰器可以按运行时顺序组合价格和描述。
+测试步骤：从 Coffee 开始，依次包装 Milk 和 OatMilk，再读取最终结果。
+通过含义：每层只增加自己的职责，新加料无需修改 Coffee 或已有装饰器。
+*/
+
 #include "after.hpp"
 
 #include <iostream>

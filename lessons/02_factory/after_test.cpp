@@ -1,3 +1,9 @@
+/*
+测试目的：验证调用方可以通过工厂创建对象，而不直接构造具体图形。
+测试步骤：向 ShapeFactory 提供强类型 ShapeType 和尺寸，再通过 Shape 接口计算面积。
+通过含义：创建规则集中在工厂中，使用图形的代码不再承担构造职责。
+*/
+
 #include "after.hpp"
 
 #include <cmath>
@@ -20,4 +26,3 @@ int main() {
           "factory should create the requested square");
     return failures == 0 ? 0 : 1;
 }
-
