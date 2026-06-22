@@ -15,18 +15,24 @@
 
 namespace observer::before {
 
+// Order 同时承担订单状态管理和所有下游通知工作。
 class Order {
 public:
     void ship() {
+        // 领域动作：仓库发货后，订单状态从 created 变为 shipped。
         status_ = "shipped";
+        // 基础设施动作也硬编码在订单里；新增审计通知必须修改本方法。
         messages_.push_back("sms:shipped");
         messages_.push_back("email:shipped");
     }
 
+    // 为示例测试暴露已发送消息，真实系统通常由通知客户端执行。
     const std::vector<std::string>& messages() const { return messages_; }
 
 private:
+    // 订单自己的领域状态。
     std::string status_ = "created";
+    // 本不属于订单核心职责的通知结果。
     std::vector<std::string> messages_;
 };
 

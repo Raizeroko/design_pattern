@@ -14,13 +14,16 @@
 
 namespace adapter::before {
 
+// 模拟不能直接修改的第三方旧支付 SDK。
 class LegacyPaySdk {
 public:
+    // 第三方接口使用自己的方法名，并以字符串表示成功或失败。
     std::string do_pay(int cents) const {
         return cents > 0 ? "OK" : "FAIL";
     }
 };
 
+// 结账业务被迫同时知道如何创建 SDK，以及 "OK" 才代表支付成功。
 inline bool checkout_with_legacy_sdk(int cents) {
     LegacyPaySdk sdk;
     return sdk.do_pay(cents) == "OK";

@@ -12,6 +12,7 @@
 
 namespace adapter::after {
 
+// 第三方 SDK 保持原样；适配器模式不要求修改外部依赖。
 class LegacyPaySdk {
 public:
     std::string do_pay(int cents) const {
@@ -22,6 +23,7 @@ public:
 // 这是业务层定义的接口，而不是第三方 SDK 强加给业务层的接口。
 struct PaymentPort {
     virtual ~PaymentPort() = default;
+    // bool 是结账业务真正需要的支付语义。
     virtual bool pay(int cents) const = 0;
 };
 
@@ -29,13 +31,16 @@ struct PaymentPort {
 class LegacyPayAdapter final : public PaymentPort {
 public:
     bool pay(int cents) const override {
+        // 在系统边界把第三方字符串协议翻译成内部布尔协议。
         return sdk_.do_pay(cents) == "OK";
     }
 
 private:
+    // SDK 被封装在适配器内部，不会泄漏到 checkout 调用方。
     LegacyPaySdk sdk_;
 };
 
+// 结账可接收任何 PaymentPort，例如旧 SDK、测试替身或新支付渠道。
 inline bool checkout(const PaymentPort& payment, int cents) {
     return payment.pay(cents);
 }

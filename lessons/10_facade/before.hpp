@@ -14,11 +14,16 @@
 
 namespace facade::before {
 
+// 库存子系统：为本次订单锁定商品。
 inline std::string reserve_stock(const std::string& sku) { return "reserved:" + sku; }
+// 支付子系统：根据金额返回支付结果。
 inline std::string charge(int cents) { return cents > 0 ? "paid" : "rejected"; }
+// 物流子系统：为已下单商品创建运单。
 inline std::string create_shipment(const std::string& sku) { return "shipment:" + sku; }
 
+// 每个页面、API 或批处理调用方都要亲自知道并重复这三步。
 inline std::string checkout(const std::string& sku, int cents) {
+    // 编排顺序暴露在调用方层面，子系统变化会影响所有入口。
     auto stock = reserve_stock(sku);
     auto payment = charge(cents);
     auto shipment = create_shipment(sku);

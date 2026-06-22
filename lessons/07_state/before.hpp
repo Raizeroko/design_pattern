@@ -14,17 +14,21 @@
 
 namespace state::before {
 
+// Ticket 同时保存状态字符串，并在每个操作中解释这个字符串。
 class Ticket {
 public:
     std::string assign() {
+        // 只有 open 工单允许被客服领取。
         if (status_ == "open") {
             status_ = "assigned";
             return "assigned";
         }
+        // assigned 或 closed 时调用 assign 都被忽略。
         return "ignored";
     }
 
     std::string close() {
+        // 只有已经 assigned 的工单允许关闭。
         if (status_ == "assigned") {
             status_ = "closed";
             return "closed";
@@ -33,6 +37,7 @@ public:
     }
 
 private:
+    // 字符串状态允许任意值，且所有操作都要重复比较它。
     std::string status_ = "open";
 };
 

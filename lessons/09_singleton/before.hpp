@@ -15,7 +15,9 @@
 
 namespace singleton::before {
 
+// 每个业务模块都必须从外部拿到同一份配置 map，再传给读取函数。
 inline std::string read_config(std::map<std::string, std::string>& config, const std::string& key) {
+    // operator[] 在 key 不存在时还会写入空值，读取动作带有隐藏副作用。
     return config[key];
 }
 

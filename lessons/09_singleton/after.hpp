@@ -14,30 +14,36 @@
 
 namespace singleton::after {
 
+// AppConfig 表示本进程共享的应用配置仓库。
 class AppConfig {
 public:
     // C++11 起，函数内 static 的首次初始化由语言保证线程安全。
     static AppConfig& instance() {
+        // 第一次访问时创建，进程结束时由运行时销毁。
         static AppConfig config;
         return config;
     }
 
     void set(std::string key, std::string value) {
+        // 启动阶段可通过统一入口写入环境、端口等配置。
         values_[std::move(key)] = std::move(value);
     }
 
     std::string get(const std::string& key) const {
+        // 查询不存在的配置返回空字符串，并且不会像 operator[] 一样插入数据。
         auto found = values_.find(key);
         return found == values_.end() ? "" : found->second;
     }
 
     void clear_for_test() {
+        // Singleton 跨测试共享状态，因此测试必须显式恢复干净环境。
         values_.clear();
     }
 
 private:
     // 私有构造阻止调用方创建第二个实例。
     AppConfig() = default;
+    // 真正的配置数据只存在于唯一 AppConfig 实例中。
     std::map<std::string, std::string> values_;
 };
 

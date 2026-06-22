@@ -12,20 +12,24 @@
 
 namespace factory::before {
 
+// 业务层使用图形时只关心“能计算面积”。
 struct Shape {
     virtual ~Shape() = default;
     virtual double area() const = 0;
 };
 
+// 但创建圆形时，调用方仍必须知道 Circle 并正确传入半径。
 struct Circle final : Shape {
     explicit Circle(double radius) : radius_(radius) {}
 
     double area() const override { return 3.14 * radius_ * radius_; }
 
 private:
+    // 半径是圆形自己的构造细节，却由每个创建它的调用方负责提供。
     double radius_;
 };
 
+// 创建正方形时，调用方同样要知道 Square 和边长参数。
 struct Square final : Shape {
     explicit Square(double side) : side_(side) {}
 

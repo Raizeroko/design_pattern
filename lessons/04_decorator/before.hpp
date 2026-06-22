@@ -14,11 +14,15 @@
 
 namespace decorator::before {
 
+// 点单系统把每种加料压缩成一个布尔参数；调用处的 true/false 很难读懂。
 inline int coffee_price(bool milk, bool syrup) {
+    // 12 元是基础咖啡价格。
     int price = 12;
+    // 牛奶是可选职责，但被直接写进基础计价函数。
     if (milk) {
         price += 3;
     }
+    // 新增加料都要继续修改参数列表和函数内部。
     if (syrup) {
         price += 2;
     }

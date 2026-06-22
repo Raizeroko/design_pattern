@@ -15,6 +15,7 @@
 
 namespace command::after {
 
+// Editor 回归为纯粹的命令接收者，只负责实际修改文本。
 class Editor {
 public:
     void append(const std::string& text) { text_ += text; }
@@ -28,19 +29,24 @@ private:
 // 操作被提升为对象后，才可以保存、排队、重放和撤销。
 struct Command {
     virtual ~Command() = default;
+    // execute 表示用户执行操作，undo 表示该操作的反向行为。
     virtual void execute() = 0;
     virtual void undo() = 0;
 };
 
 class AppendTextCommand final : public Command {
 public:
+    // 一个命令同时记录目标编辑器和本次用户输入的文本。
     AppendTextCommand(Editor& editor, std::string text)
         : editor_(editor), text_(std::move(text)) {}
 
+    // 执行时把保存的文本交给编辑器。
     void execute() override { editor_.append(text_); }
+    // 撤销所需长度由命令自己保存，调用方无需重新推算。
     void undo() override { editor_.erase_last(text_.size()); }
 
 private:
+    // 非拥有引用：Editor 必须比命令和历史记录活得更久。
     Editor& editor_;
     std::string text_;
 };
@@ -49,19 +55,23 @@ private:
 class CommandHistory {
 public:
     void execute(std::unique_ptr<Command> command) {
+        // 先真正执行用户操作，成功后再把命令放进历史栈。
         command->execute();
         history_.push_back(std::move(command));
     }
 
     void undo_last() {
+        // 没有历史时撤销是安全的空操作。
         if (history_.empty()) {
             return;
         }
+        // 栈顶就是最近一次操作，撤销后将其从历史中移除。
         history_.back()->undo();
         history_.pop_back();
     }
 
 private:
+    // unique_ptr 表示历史记录拥有这些命令对象。
     std::vector<std::unique_ptr<Command>> history_;
 };
 

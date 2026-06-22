@@ -14,13 +14,18 @@
 
 namespace command::before {
 
+// Editor 只提供文本操作，本身不知道哪些操作需要进入历史记录。
 class Editor {
 public:
+    // 用户输入文本时，调用方直接修改编辑器。
     void append(const std::string& text) { text_ += text; }
+    // 撤销时调用方必须自己记住上次追加了多少字符。
     void erase_last(int count) { text_.erase(text_.size() - static_cast<std::size_t>(count)); }
+    // 界面读取当前文本用于显示。
     const std::string& text() const { return text_; }
 
 private:
+    // 编辑器当前持有的文档内容。
     std::string text_;
 };
 
