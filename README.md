@@ -6,39 +6,36 @@
 
 每一关都按同一种节奏推进：
 
-1. 阅读关卡 `README.md`，理解业务背景和新增需求。
-2. 阅读 `before/`，找出坏味道。
-3. 在 `practice/` 中自己尝试重构。
-4. 运行测试，确认行为和新增需求。
-5. 最后再对照 `solutions/` 中的参考实现，观察设计模式解决了哪个变化点。
-6. 完成 `notes.md` 里的复盘问题。
+1. 打开某一关的 `before.hpp`，阅读场景、坏味道和初始代码。
+2. 在同目录的 `practice.hpp` 中完成自己的实现。
+3. 阅读 `test.cpp` 中直白的输入、预期结果和失败信息。
+4. 单独构建并运行本关测试。
+5. 测试通过后再打开 `after.hpp`，对照带注释的参考实现。
 
 ## 构建和测试
 
 ```powershell
 cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
+cmake --build build --target strategy_test
+.\build\strategy_test.exe
 ```
 
-项目不依赖 Catch2、GoogleTest 或其他第三方库，测试工具在 `tests/test_framework.hpp`。
+把 `strategy` 换成当前关卡名即可。每个测试都使用普通 `if`、`std::cout` 和 `std::cerr`，不依赖测试框架。
+
+除 Strategy 外，其余 `practice.hpp` 默认是带 `TODO` 的可编译骨架，首次运行测试失败是正常现象。按 `test.cpp` 中写明的业务预期逐项实现，直到进程返回 0；你也可以自由调整练习接口，只需同步修改测试中的对象构造部分，业务断言不要降低。
 
 ## 目录约定
 
 ```text
 lessons/
   01_strategy/
-    README.md
-    before/
-    practice/
-    tests/
-    notes.md
-solutions/
-  01_strategy/
-    after/
+    before.hpp
+    practice.hpp
+    after.hpp
+    test.cpp
 ```
 
-`lessons/` 是闯关区，优先只看这里。`solutions/` 是答案区，建议完成自己的版本后再打开。
+每一关的场景、练习、答案和测试都在同一文件夹中，减少学习时来回跳转。建议测试通过后再打开 `after.hpp`。
 
 ## 首版关卡
 

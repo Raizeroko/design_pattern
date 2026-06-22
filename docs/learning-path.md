@@ -2,7 +2,7 @@
 
 ## 第一阶段：能识别变化点
 
-先完成 Strategy、Factory、Adapter。重点观察：哪些代码会因为一个新渠道、新算法、新接口而反复修改。每关先在 `practice/` 写自己的版本，再对照 `solutions/`。
+先完成 Strategy、Factory、Adapter。重点观察：哪些代码会因为一个新渠道、新算法、新接口而反复修改。每关先在 `practice.hpp` 写自己的版本，再对照同目录的 `after.hpp`。
 
 ## 第二阶段：能保护业务流程
 
