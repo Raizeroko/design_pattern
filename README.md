@@ -22,7 +22,7 @@ cmake --build build --target strategy_test
 
 把 `strategy` 换成当前关卡名即可。每个测试都使用普通 `if`、`std::cout` 和 `std::cerr`，不依赖测试框架。
 
-除 Strategy 外，其余 `practice.hpp` 默认是带 `TODO` 的可编译骨架，首次运行测试失败是正常现象。按 `test.cpp` 中写明的业务预期逐项实现，直到进程返回 0；你也可以自由调整练习接口，只需同步修改测试中的对象构造部分，业务断言不要降低。
+除已完成的 Strategy 外，其余 `practice.hpp` 不提供任何接口或实现骨架。先阅读 `before.hpp` 和 `test.cpp`，再自行设计类型与实现；首次构建因缺少类型而失败是正常现象。你可以自由调整练习接口，只需同步修改测试中的对象构造部分，业务断言不要降低。
 
 ## 目录约定
 
