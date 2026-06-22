@@ -8,21 +8,21 @@
 
 1. 打开某一关的 `before.hpp`，阅读场景、坏味道和初始代码。
 2. 在同目录的 `practice.hpp` 中完成自己的实现。
-3. 阅读 `test.cpp` 中直白的输入、预期结果和失败信息。
-4. 单独构建并运行本关测试。
-5. 测试通过后再打开 `after.hpp`，对照带注释的参考实现。
+3. 运行 `before_test.cpp`，确认初始代码当前行为。
+4. 在 `practice.hpp` 中自由设计自己的实现和测试。
+5. 最后阅读 `after.hpp` 与 `after_test.cpp`，对照参考重构及新增需求。
 
 ## 构建和测试
 
 ```powershell
 cmake -S . -B build
-cmake --build build --target strategy_test
-.\build\strategy_test.exe
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
-把 `strategy` 换成当前关卡名即可。每个测试都使用普通 `if`、`std::cout` 和 `std::cerr`，不依赖测试框架。
+每个测试都使用普通 `if`、`std::cout` 和 `std::cerr`，不依赖测试框架。before 与 after 接口不同时使用独立测试文件，避免用兼容代码掩盖设计差异。
 
-除已完成的 Strategy 外，其余 `practice.hpp` 不提供任何接口或实现骨架。先阅读 `before.hpp` 和 `test.cpp`，再自行设计类型与实现；首次构建因缺少类型而失败是正常现象。你可以自由调整练习接口，只需同步修改测试中的对象构造部分，业务断言不要降低。
+除已完成的 Strategy 外，其余 `practice.hpp` 不提供任何接口或实现骨架，也不参与 CMake 构建。你可以自由设计练习接口，并参考 before/after 测试为自己的实现补充测试。
 
 ## 目录约定
 
@@ -32,7 +32,8 @@ lessons/
     before.hpp
     practice.hpp
     after.hpp
-    test.cpp
+    before_test.cpp
+    after_test.cpp
 ```
 
 每一关的场景、练习、答案和测试都在同一文件夹中，减少学习时来回跳转。建议测试通过后再打开 `after.hpp`。
