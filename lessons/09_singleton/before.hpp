@@ -13,11 +13,18 @@
 #include <map>
 #include <string>
 
+/*
+概念与代码对照：
+- [共享资源] 调用方各自持有并传入的 config map。
+- [访问动作] read_config(config, key)。
+- [问题证据] 没有统一实例入口；所有需要配置的函数都要传递 map。
+*/
+
 namespace singleton::before {
 
-// 每个业务模块都必须从外部拿到同一份配置 map，再传给读取函数。
+// [访问动作] 每个业务模块必须显式传入共享 config。
 inline std::string read_config(std::map<std::string, std::string>& config, const std::string& key) {
-    // operator[] 在 key 不存在时还会写入空值，读取动作带有隐藏副作用。
+    // [问题证据] 没有统一访问点；operator[] 还让读取带有写入副作用。
     return config[key];
 }
 

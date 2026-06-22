@@ -9,51 +9,60 @@
 */
 
 #include <sstream>
+/*
+模式角色与代码对照：
+- [AbstractClass] ReportExporter。
+- [TemplateMethod] export_report，固定调用顺序。
+- [PrimitiveOperation / 变化步骤] format_rows。
+- [ConcreteClass] CsvExporter、JsonLinesExporter。
+- [执行动作] 调用 export_report，内部自动拼接 header + format_rows + footer。
+*/
+
 #include <string>
 #include <vector>
 
 namespace template_method::after {
 
-// ReportExporter 表达所有报表共享的业务流程。
+// [AbstractClass] 定义所有报表共享的流程骨架。
 class ReportExporter {
 public:
     virtual ~ReportExporter() = default;
 
-    // 模板方法固定执行顺序，子类不能跳过头部或尾部。
+    // [TemplateMethod] 对外入口，固定三个步骤的调用顺序。
     std::string export_report(const std::vector<int>& rows) const {
-        // 先头部、再数据、最后尾部的顺序只在这里定义一次。
+        // [流程编排] 依次执行固定步骤、变化步骤、固定步骤。
         return header() + format_rows(rows) + footer();
     }
 
 private:
-    // 只把真正变化的步骤留给子类。
+    // [PrimitiveOperation] 把唯一变化的行格式留给 ConcreteClass。
     virtual std::string format_rows(const std::vector<int>& rows) const = 0;
 
-    // 头尾是所有格式共同遵守的协议，不开放给子类随意修改。
+    // [固定步骤] header/footer 由 AbstractClass 自己实现。
     std::string header() const { return "begin\n"; }
     std::string footer() const { return "end"; }
 };
 
-// CSV 导出器只回答“每一行如何表示”。
+// [ConcreteClass 1] CsvExporter 实现 CSV 行格式。
 class CsvExporter final : public ReportExporter {
 private:
     std::string format_rows(const std::vector<int>& rows) const override {
         std::string out;
         for (int row : rows) {
-            // CSV 场景中，一个数字占一行。
+            // [变化步骤实现 1] 一个数字占一行。
             out += std::to_string(row) + "\n";
         }
         return out;
     }
 };
 
-// JSON Lines 复用相同流程，只替换数据行格式。
+// [ConcreteClass 2] JsonLinesExporter 实现 JSON Lines 行格式。
 class JsonLinesExporter final : public ReportExporter {
 private:
     std::string format_rows(const std::vector<int>& rows) const override {
         std::string out;
         for (int row : rows) {
-            // 每一行都是独立 JSON 对象，头部和尾部无需在这里重复。
+            // [变化步骤实现 2] 每一行是独立 JSON 对象。
             out += "{\"value\":" + std::to_string(row) + "}\n";
         }
         return out;

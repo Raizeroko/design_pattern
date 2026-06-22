@@ -12,17 +12,25 @@
 
 #include <string>
 
+/*
+概念与代码对照：
+- [基础对象] price 初始值 12 代表基础咖啡。
+- [可选职责] milk、syrup 两个布尔参数。
+- [组合动作] if (milk/syrup) 决定叠加哪些职责。
+- [问题证据] 新增加料必须修改函数参数和函数内部分支。
+*/
+
 namespace decorator::before {
 
-// 点单系统把每种加料压缩成一个布尔参数；调用处的 true/false 很难读懂。
+// [调用方输入] milk、syrup 用布尔值描述要组合的加料。
 inline int coffee_price(bool milk, bool syrup) {
-    // 12 元是基础咖啡价格。
+    // [基础对象] price=12 表示未加料咖啡。
     int price = 12;
-    // 牛奶是可选职责，但被直接写进基础计价函数。
+    // [可选职责 1] milk 分支把牛奶职责写进基础函数。
     if (milk) {
         price += 3;
     }
-    // 新增加料都要继续修改参数列表和函数内部。
+    // [可选职责 2] syrup 分支继续扩大基础函数。
     if (syrup) {
         price += 2;
     }

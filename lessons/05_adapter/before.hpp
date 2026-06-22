@@ -12,18 +12,27 @@
 
 #include <string>
 
+/*
+概念与代码对照：
+- [Adaptee / 被适配者] LegacyPaySdk。
+- [不兼容接口] do_pay(int) 返回 "OK"/"FAIL"。
+- [Client / 调用方] checkout_with_legacy_sdk。
+- [手工转换动作] sdk.do_pay(cents) == "OK"。
+- [问题证据] 业务函数直接知道 SDK 类型、方法名和返回协议。
+*/
+
 namespace adapter::before {
 
-// 模拟不能直接修改的第三方旧支付 SDK。
+// [Adaptee / 被适配者] 无法按业务需要直接修改的旧支付 SDK。
 class LegacyPaySdk {
 public:
-    // 第三方接口使用自己的方法名，并以字符串表示成功或失败。
+    // [不兼容接口] do_pay 返回字符串，而业务需要 bool pay。
     std::string do_pay(int cents) const {
         return cents > 0 ? "OK" : "FAIL";
     }
 };
 
-// 结账业务被迫同时知道如何创建 SDK，以及 "OK" 才代表支付成功。
+// [Client / 调用方] 结账业务直接依赖 Adaptee 并手工转换协议。
 inline bool checkout_with_legacy_sdk(int cents) {
     LegacyPaySdk sdk;
     return sdk.do_pay(cents) == "OK";

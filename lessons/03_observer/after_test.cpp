@@ -9,13 +9,18 @@
 #include <iostream>
 
 int main() {
+    // [发布者] Order 不再内置任何具体通知渠道。
     observer::after::Order order;
+    // [具体接收者] audit 与 risk 都实现了统一 OrderObserver 接口。
     observer::after::RecordingObserver audit("audit");
     observer::after::RecordingObserver risk("risk");
+    // [订阅动作] 接收者主动注册到发布者。
     order.subscribe(audit);
     order.subscribe(risk);
+    // [发布动作] ship() 只遍历抽象 Observer 并调用统一接收动作。
     order.ship();
 
+    // [接收结果] 每个 ConcreteObserver 独立保存自己处理的事件。
     const bool audit_ok = audit.messages().size() == 1 &&
                           audit.messages()[0] == "audit:shipped";
     const bool risk_ok = risk.messages().size() == 1 &&

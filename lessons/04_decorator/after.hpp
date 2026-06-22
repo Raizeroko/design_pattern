@@ -12,40 +12,50 @@ unique_ptr 明确每层装饰器拥有内层对象，组合销毁时不会泄漏
 #include <string>
 #include <utility>
 
+/*
+模式角色与代码对照：
+- [Component] Drink。
+- [ConcreteComponent] Coffee。
+- [Decorator] DrinkDecorator，内部持有另一个 Drink。
+- [ConcreteDecorator] Milk、Syrup、OatMilk。
+- [包装动作] 装饰器构造函数接收 inner。
+- [叠加动作] inner().price/name + 当前加料的变化。
+*/
+
 namespace decorator::after {
 
-// 点单和收银只依赖 Drink：任何组合都能给出价格和小票名称。
+// [Component] 点单和收银依赖的统一饮品接口。
 struct Drink {
     virtual ~Drink() = default;
     virtual int price() const = 0;
     virtual std::string name() const = 0;
 };
 
-// Coffee 是最内层的基础饮品，不包含任何加料。
+// [ConcreteComponent] 最内层基础咖啡，不包含加料。
 struct Coffee final : Drink {
     int price() const override { return 12; }
     std::string name() const override { return "coffee"; }
 };
 
-// 公共装饰器保存内层对象，具体装饰器只负责叠加自己的变化。
+// [Decorator] 保存另一个 Component，并为具体装饰器提供转发能力。
 class DrinkDecorator : public Drink {
 public:
-    // 每一层加料接管内层饮品的所有权，形成一条完整组合链。
+    // [包装动作] 构造函数接收并保存被包装的 inner Drink。
     explicit DrinkDecorator(std::unique_ptr<Drink> inner) : inner_(std::move(inner)) {}
 
 protected:
-    // 具体加料先取得内层结果，再叠加自己的价格或名称。
+    // [委托动作] 具体装饰器通过 inner() 取得上一层结果。
     const Drink& inner() const { return *inner_; }
 
 private:
     std::unique_ptr<Drink> inner_;
 };
 
-// Milk 与其他装饰器保持相同接口，因此可以继续被下一层包装。
+// [ConcreteDecorator 1] Milk 在内层结果上叠加牛奶职责。
 class Milk final : public DrinkDecorator {
 public:
     using DrinkDecorator::DrinkDecorator;
-    // 牛奶只知道自己加 3 元、在小票追加 +milk。
+    // [叠加动作] 先调用 inner().price，再增加 3 元。
     int price() const override { return inner().price() + 3; }
     std::string name() const override { return inner().name() + "+milk"; }
 };
@@ -53,7 +63,7 @@ public:
 class Syrup final : public DrinkDecorator {
 public:
     using DrinkDecorator::DrinkDecorator;
-    // 糖浆与牛奶互不依赖，可以单独使用或任意组合。
+    // [ConcreteDecorator 2] Syrup 独立叠加糖浆职责。
     int price() const override { return inner().price() + 2; }
     std::string name() const override { return inner().name() + "+syrup"; }
 };
@@ -61,7 +71,7 @@ public:
 class OatMilk final : public DrinkDecorator {
 public:
     using DrinkDecorator::DrinkDecorator;
-    // 新增燕麦奶没有改动 Coffee、Milk 或点单流程。
+    // [ConcreteDecorator 3] OatMilk 是新增职责，不修改已有类。
     int price() const override { return inner().price() + 5; }
     std::string name() const override { return inner().name() + "+oat"; }
 };

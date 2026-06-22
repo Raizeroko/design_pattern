@@ -11,15 +11,24 @@
 #include <memory>
 #include <stdexcept>
 
+/*
+模式角色与代码对照：
+- [Product] Shape。
+- [ConcreteProduct] Circle、Square。
+- [创建请求] ShapeType + size。
+- [Factory] ShapeFactory::create。
+- [创建动作] switch 将请求映射成 make_unique<Circle/Square>。
+*/
+
 namespace factory::after {
 
-// 工厂返回统一的 Shape，后续计算面积的业务代码不依赖具体图形。
+// [Product / 抽象产品] 工厂统一返回 Shape。
 struct Shape {
     virtual ~Shape() = default;
     virtual double area() const = 0;
 };
 
-// 具体图形仍负责各自领域计算；工厂不会接管对象行为。
+// [ConcreteProduct 1] Circle 仍只负责圆形面积计算。
 struct Circle final : Shape {
     explicit Circle(double radius) : radius_(radius) {}
 
@@ -38,24 +47,24 @@ private:
     double side_;
 };
 
-// 创建意图是强类型枚举，调用方不会传入任意字符串。
+// [创建请求] ShapeType 让调用方描述“要哪种产品”。
 enum class ShapeType {
-    // 这些值是调用方向工厂表达的创建需求。
+    // [可选产品类型] 每个枚举值对应一个 ConcreteProduct。
     circle,
     square,
 };
 
-// 唯一知道具体类型构造方式的地方。
+// [Factory / 工厂] 唯一知道具体产品及构造方式的角色。
 class ShapeFactory {
 public:
-    // size 在本场景表示半径或边长；真实项目可改为专用参数对象。
+    // [创建入口] type 决定产品，size 提供当前简化场景的尺寸。
     static std::unique_ptr<Shape> create(ShapeType type, double size) {
         switch (type) {
         case ShapeType::circle:
-            // 只有工厂知道 circle 应映射为 Circle(radius)。
+            // [创建动作 1] 工厂把 circle 请求映射为 Circle(radius)。
             return std::make_unique<Circle>(size);
         case ShapeType::square:
-            // 构造校验或默认值也可以集中维护在创建分支中。
+            // [创建动作 2] 工厂把 square 请求映射为 Square(side)。
             return std::make_unique<Square>(size);
         }
         throw std::invalid_argument("unknown shape type");

@@ -9,9 +9,13 @@
 #include <iostream>
 
 int main() {
+    // [发布者] 创建订单；此时它内部已经固定持有短信和邮件两个具体接收者。
     observer::before::Order order;
+
+    // [发布动作] ship() 内部会直接点名调用 sms_.send 和 email_.send。
     order.ship();
 
+    // [接收结果] 两个具体接收者分别处理状态，结果被 Order 收集。
     const bool ok = order.messages().size() == 2 &&
                     order.messages()[0] == "sms:shipped" &&
                     order.messages()[1] == "email:shipped";

@@ -11,50 +11,59 @@
 #include <memory>
 #include <utility>
 
+/*
+模式角色与代码对照：
+- [Strategy] ShippingStrategy::fee。
+- [ConcreteStrategy] StandardShipping、ExpressShipping、SameDayShipping。
+- [Context] Checkout。
+- [注入动作] Checkout 构造函数接收策略。
+- [委托动作] Checkout::shipping_fee 调用 strategy_->fee。
+*/
+
 namespace strategy::after {
 
-// 稳定抽象：Checkout 不再关心具体计费公式。
+// [Strategy / 策略接口] Checkout 只认识这个统一计费动作。
 struct ShippingStrategy {
     virtual ~ShippingStrategy() = default;
-    // 所有配送产品接受相同业务输入，Checkout 因此可以统一调用。
+    // [策略动作] 所有具体策略都必须实现 fee。
     virtual int fee(int distance_km, bool vip) const = 0;
 };
 
-// 标准配送产品只保存自己的计费知识。
+// [ConcreteStrategy 1] 封装标准配送公式。
 struct StandardShipping final : ShippingStrategy {
     int fee(int distance_km, bool vip) const override {
         return (vip ? 0 : 10) + distance_km * 2;
     }
 };
 
-// 加急配送产品独立演进，不影响标准配送公式。
+// [ConcreteStrategy 2] 封装加急配送公式。
 struct ExpressShipping final : ShippingStrategy {
     int fee(int distance_km, bool vip) const override {
         return (vip ? 0 : 20) + distance_km * 4;
     }
 };
 
-// 新增“当日达”只增加一个策略类，无需进入 Checkout 添加分支。
+// [ConcreteStrategy 3] 新增当日达时只增加本类，不修改 Context。
 struct SameDayShipping final : ShippingStrategy {
     int fee(int distance_km, bool vip) const override {
         return (vip ? 15 : 35) + distance_km * 6;
     }
 };
 
-// 上下文只负责使用策略，并通过 unique_ptr 明确拥有策略。
+// [Context / 上下文] 结账流程保存并使用当前订单选择的策略。
 class Checkout {
 public:
-    // 创建结账上下文时选择本次订单使用的配送产品。
+    // [注入动作] 构造 Checkout 时把具体策略交给上下文。
     explicit Checkout(std::unique_ptr<ShippingStrategy> strategy)
         : strategy_(std::move(strategy)) {}
 
     int shipping_fee(int distance_km, bool vip) const {
-        // 结账流程只转交业务参数，不知道公式细节。
+        // [委托动作] Context 把计算请求转给 Strategy::fee。
         return strategy_->fee(distance_km, vip);
     }
 
 private:
-    // Checkout 拥有策略，保证计算期间策略对象始终有效。
+    // [Context 与 Strategy 的关系] Checkout 独占当前策略的生命周期。
     std::unique_ptr<ShippingStrategy> strategy_;
 };
 

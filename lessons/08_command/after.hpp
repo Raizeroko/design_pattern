@@ -9,13 +9,23 @@
 */
 
 #include <memory>
+/*
+模式角色与代码对照：
+- [Receiver] Editor。
+- [Command] Command。
+- [ConcreteCommand] AppendTextCommand。
+- [Invoker] CommandHistory。
+- [执行动作] history.execute -> command.execute -> editor.append。
+- [撤销动作] history.undo_last -> command.undo -> editor.erase_last。
+*/
+
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace command::after {
 
-// Editor 回归为纯粹的命令接收者，只负责实际修改文本。
+// [Receiver] Editor 只负责实际修改文本。
 class Editor {
 public:
     void append(const std::string& text) { text_ += text; }
@@ -26,52 +36,52 @@ private:
     std::string text_;
 };
 
-// 操作被提升为对象后，才可以保存、排队、重放和撤销。
+// [Command] 把请求抽象为可执行、可撤销的对象。
 struct Command {
     virtual ~Command() = default;
-    // execute 表示用户执行操作，undo 表示该操作的反向行为。
+    // [命令动作] execute 执行请求，undo 执行反向请求。
     virtual void execute() = 0;
     virtual void undo() = 0;
 };
 
 class AppendTextCommand final : public Command {
 public:
-    // 一个命令同时记录目标编辑器和本次用户输入的文本。
+    // [ConcreteCommand] 保存 Receiver 和本次请求参数。
     AppendTextCommand(Editor& editor, std::string text)
         : editor_(editor), text_(std::move(text)) {}
 
-    // 执行时把保存的文本交给编辑器。
+    // [执行链] ConcreteCommand 调用 Receiver::append。
     void execute() override { editor_.append(text_); }
-    // 撤销所需长度由命令自己保存，调用方无需重新推算。
+    // [撤销链] ConcreteCommand 根据自身参数调用 Receiver::erase_last。
     void undo() override { editor_.erase_last(text_.size()); }
 
 private:
-    // 非拥有引用：Editor 必须比命令和历史记录活得更久。
+    // [Command-Receiver 关系] 非拥有引用，Editor 必须活得更久。
     Editor& editor_;
     std::string text_;
 };
 
-// 调用方只把命令交给历史记录，不再手工维护撤销信息。
+// [Invoker / 调用者] CommandHistory 触发命令并保存历史。
 class CommandHistory {
 public:
     void execute(std::unique_ptr<Command> command) {
-        // 先真正执行用户操作，成功后再把命令放进历史栈。
+        // [调用动作] Invoker 调用 Command::execute，再保存命令。
         command->execute();
         history_.push_back(std::move(command));
     }
 
     void undo_last() {
-        // 没有历史时撤销是安全的空操作。
+        // [边界规则] 没有命令时，撤销为空操作。
         if (history_.empty()) {
             return;
         }
-        // 栈顶就是最近一次操作，撤销后将其从历史中移除。
+        // [撤销动作] Invoker 调用最近 Command::undo 并移出历史。
         history_.back()->undo();
         history_.pop_back();
     }
 
 private:
-    // unique_ptr 表示历史记录拥有这些命令对象。
+    // [Invoker-Command 关系] 历史记录拥有命令对象。
     std::vector<std::unique_ptr<Command>> history_;
 };
 

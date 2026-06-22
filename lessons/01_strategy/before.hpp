@@ -13,20 +13,28 @@
 #include <stdexcept>
 #include <string>
 
+/*
+概念与代码对照：
+- [调用方输入] method、distance_km、vip。
+- [策略选择动作] if (method == ...)。
+- [具体算法] 每个 return 中的计费公式。
+- [问题证据] 选择与算法都在 shipping_fee；新增配送方式必须修改该函数。
+*/
+
 namespace strategy::before {
 
-// 结账页面把用户选择的配送方式、配送距离和会员身份一起传进来。
-// 这个函数既负责识别配送方式，又负责执行对应公式，所以会成为变化中心。
+// [调用方输入] 结账页面传入配送方式、距离和会员身份。
+// [问题证据] shipping_fee 同时执行“选择策略”和“计算费用”两个动作。
 inline int shipping_fee(const std::string& method, int distance_km, bool vip) {
-    // 标准配送：普通用户收 10 元起步价，每公里 2 元；VIP 免起步价。
+    // [具体算法 1] standard：10 元起步价 + 每公里 2 元；VIP 免起步价。
     if (method == "standard") {
         return vip ? distance_km * 2 : 10 + distance_km * 2;
     }
-    // 加急配送：价格更高，但会员优惠规则仍混在同一个函数中。
+    // [具体算法 2] express：20 元起步价 + 每公里 4 元；VIP 免起步价。
     if (method == "express") {
         return vip ? distance_km * 4 : 20 + distance_km * 4;
     }
-    // 字符串不受类型系统保护，拼错的配送方式只能运行到这里才被发现。
+    // [问题证据] 字符串不受类型系统保护，拼错只能运行到这里才发现。
     throw std::invalid_argument("unknown shipping method");
 }
 

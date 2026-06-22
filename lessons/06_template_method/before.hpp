@@ -13,17 +13,25 @@
 #include <string>
 #include <vector>
 
+/*
+概念与代码对照：
+- [完整流程] export_csv。
+- [固定步骤] 写入 "begin"、写入 "end"。
+- [变化步骤] for 循环中的 CSV 行格式。
+- [问题证据] 固定步骤和变化步骤混在一个函数；新增格式容易复制整段流程。
+*/
+
 namespace template_method::before {
 
-// CSV 导出函数同时定义整个导出流程和 CSV 的行格式。
+// [完整流程] export_csv 同时定义固定流程和 CSV 变化步骤。
 inline std::string export_csv(const std::vector<int>& rows) {
-    // 所有报表都必须先写固定头部。
+    // [固定步骤 1] 所有报表先写头部。
     std::string out = "begin\n";
-    // 这里真正属于 CSV 的变化点，是把每个数字写成一行文本。
+    // [变化步骤] CSV 把每个数字写成一行文本。
     for (int row : rows) {
         out += std::to_string(row) + "\n";
     }
-    // 所有报表都必须以固定尾部结束；复制新导出函数时很容易漏掉。
+    // [固定步骤 2] 所有报表最后写尾部。
     out += "end";
     return out;
 }
